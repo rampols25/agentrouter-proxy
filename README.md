@@ -1,1 +1,34 @@
+export default {
+  async fetch(request, env) {
+    // Replace this with your own AgentRouter API key
+    const API_KEY = "sk-ntuTTa7MPaMYYysTbBk5KZyOyUmy0RPSWUfhvVynmCrDaZ11";
+
+    // AgentRouter API endpoint
+    const targetURL = "https://api.agentrouter.org/v1/chat/completion";
+
+    try {
+      // Forward request body and headers to AgentRouter API
+      const response = await fetch(targetURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${API_KEY}`,
+        },
+        body: await request.text(),
+      });
+
+      const data = await response.text();
+      return new Response(data, {
+        status: response.status,
+        headers: { "Content-Type": "application/json" },
+      });
+
+    } catch (error) {
+      return new Response(
+        JSON.stringify({ error: "Proxy request failed", details: error.message }),
+        { status: 500, headers: { "Content-Type": "application/json" } }
+      );
+    }
+  },
+};
 # agentrouter-proxy
