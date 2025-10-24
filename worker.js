@@ -1,6 +1,6 @@
 export default {
   async fetch(request, env) {
-    const API_KEY = "YOUR_AGENTROUTER_API_KEY";
+    const API_KEY = "sk-ntuTTa7MPaMYYysTbBk5KZyOyUmy0RPSWUfhvVynmCrDaZ11";
     const BASE_URL = "https://api.agentrouter.org/v1";
     const url = new URL(request.url);
 
