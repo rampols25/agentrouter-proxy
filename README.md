@@ -1,34 +1,38 @@
 export default {
   async fetch(request, env) {
-    // Replace this with your own AgentRouter API key
     const API_KEY = "sk-ntuTTa7MPaMYYysTbBk5KZyOyUmy0RPSWUfhvVynmCrDaZ11";
+    const BASE_URL = "https://api.agentrouter.org/v1";
+    const url = new URL(request.url);
 
-    // AgentRouter API endpoint
-    const targetURL = "https://api.agentrouter.org/v1/chat/completion";
+    let endpoint = "/chat/completions";
+    if (url.pathname.startsWith("/image")) endpoint = "/images/generate";
+    if (url.pathname.startsWith("/tools")) endpoint = "/tools";
+
+    const targetURL = `${BASE_URL}${endpoint}`;
 
     try {
-      // Forward request body and headers to AgentRouter API
       const response = await fetch(targetURL, {
-        method: "POST",
+        method: request.method,
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${API_KEY}`,
         },
-        body: await request.text(),
+        body: request.method === "GET" ? undefined : await request.text(),
       });
 
       const data = await response.text();
       return new Response(data, {
         status: response.status,
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+    } catch (err) {
+      return new Response(JSON.stringify({ error: err.message }), {
+        status: 500,
         headers: { "Content-Type": "application/json" },
       });
-
-    } catch (error) {
-      return new Response(
-        JSON.stringify({ error: "Proxy request failed", details: error.message }),
-        { status: 500, headers: { "Content-Type": "application/json" } }
-      );
     }
   },
 };
-# agentrouter-proxy
